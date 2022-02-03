@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -5,7 +7,8 @@
 }
 
 body {
-  height: 100vh;
+  min-height: 100vh;
+  width: auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -15,4 +18,50 @@ body {
 #canvas {
   background-color: #1C1C1C;
   border: 7px solid white ;
+}
+
+.menuBoard {
+  padding-left: 2%;
+  height: 350px;
+  color: white;
+  font-family: 'Press Start 2P';
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.score h2 {
+  padding-top: 10%;
+}
+
+
+@media only screen and (max-width: 480px) {
+
+   body { 
+      justify-content: space-around;
+   }
+
+   .menuBoard {
+    padding-left: 0;
+  }
+
+  h2 {
+  font-size: 18px;
+  }
+
+  h1 {
+  font-size: 24px;
+  }
+
+  h3, h5 {
+  font-size: 9px;
+  }
+
 }
