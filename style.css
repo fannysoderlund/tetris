@@ -1,0 +1,20 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(28, 28, 28);
+}
+
+#canvas {
+  width: 300px;
+  height: 500px;
+  background-color: rgb(28, 28, 28);
+  border: 7px solid white ;
+}
