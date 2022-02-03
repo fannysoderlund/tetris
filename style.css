@@ -9,12 +9,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgb(28, 28, 28);
+  background-color: #1C1C1C;
 }
 
 #canvas {
-  width: 300px;
-  height: 500px;
-  background-color: rgb(28, 28, 28);
+  background-color: #1C1C1C;
   border: 7px solid white ;
 }
