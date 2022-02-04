@@ -31,6 +31,10 @@ body {
   justify-content: space-around;
 }
 
+#gameStatus {
+  cursor: pointer;
+}
+
 .score {
   display: flex;
   flex-direction: column;
