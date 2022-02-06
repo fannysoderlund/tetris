@@ -8,6 +8,9 @@ const colorPicker = document.getElementById('colorPicker');
 const dropDownColor = document.getElementById('dropdown-content');
 const dropDownDiv = document.getElementById('dropdown');
 
+let touchendX = 0;
+let touchendY = 0;
+
 context.scale(18, 18)
 
 const tetrominos = [
@@ -171,6 +174,27 @@ document.addEventListener('keydown', event => {
     rotate(currentTetromino.tetromino);
   }
 });
+
+document.addEventListener('touchstart', function (event) {
+  touchstartX = event.changedTouches[0].screenX;
+  touchstartY = event.changedTouches[0].screenY;
+}, false);
+
+document.addEventListener('touchend', function (event) {
+  touchendX = event.changedTouches[0].screenX;
+  touchendY = event.changedTouches[0].screenY;
+  touchMoveTetromino();
+}, false);
+
+function touchMoveTetromino() {
+  if (touchendX < touchstartX) {
+    moveTetromino(-1);
+  } else if (touchendX > touchstartX) {
+    moveTetromino(1);
+  } else {
+    rotate(currentTetromino.tetromino);
+  }
+}
 
 function moveTetromino(offset) {
   currentTetromino.offset.x += offset;
