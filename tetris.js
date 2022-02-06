@@ -74,6 +74,12 @@ const colorsOldSchool = ['#1C1C1C', '#00E4FF', '#06FF30', '#9C1FFF', '#EBFF00', 
 
 let score = 0;
 
+if (localStorage.getItem("highScore") === null) {
+  localStorage.setItem("highScore", '0');
+}
+
+scoreCounter.innerHTML = localStorage.getItem("highScore").toString();
+
 const gameBoard = generateGameboard(13, 22);
 
 const currentTetromino = {
@@ -92,6 +98,21 @@ function collide(gameBoard, currentTetromino) {
     }
   }
   return false;
+}
+
+function clearRow() {
+  outer: for (let y = gameBoard.length - 1; y > 0; --y) {
+    for (let x = 0; x < gameBoard[y].length; ++x) {
+      if (gameBoard[y][x] === 0) {
+        continue outer;
+      }
+    }
+    const row = gameBoard.splice(y, 1)[0].fill(0);
+    gameBoard.unshift(row);
+    ++y;
+    score++;
+    scoreCounter.innerHTML = score;
+  }
 }
 
 function generateGameboard(width, height) {
@@ -165,6 +186,7 @@ function dropTetromino() {
     populateGameBoard(gameBoard, currentTetromino);
     currentTetromino.offset.y = 0;
     newTetromino();
+    clearRow();
   }
   dropCounter = 0;
 }
@@ -212,7 +234,7 @@ function play(time = 0) {
   const deltaTime = time - lastTime;
   lastTime = time;
   dropCounter += deltaTime;
-  if (dropCounter > 1000) {
+  if (dropCounter > 500) {
     dropTetromino();
   }
 
@@ -236,6 +258,10 @@ function gameOver() {
   colorPicker.style.color = 'white';
   colorPicker.style.pointerEvents = 'all';
   dropDownDiv.style.pointerEvents = 'all';
+
+  if (score > localStorage.getItem("highScore")) {
+    localStorage.setItem("highScore", score);
+  }
 }
 
 function pickColorScheme(colorScheme) {
@@ -249,6 +275,7 @@ playButton.addEventListener('click', () => {
   playButton.style.pointerEvents = 'none';
   playButton.style.cursor = 'none';
   scoreLabel.innerHTML = 'SCORE';
+  scoreCounter.innerHTML = score.toString();
   colorPicker.style.color = '#1C1C1C';
   colorPicker.style.pointerEvents = 'none';
   dropDownDiv.style.pointerEvents = 'none';
