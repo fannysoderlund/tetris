@@ -8,8 +8,8 @@ const colorPicker = document.getElementById('colorPicker');
 const dropDownColor = document.getElementById('dropdown-content');
 const dropDownDiv = document.getElementById('dropdown');
 
-let touchendX = 0;
-let touchendY = 0;
+let touchstart = 0;
+let touchend = 0;
 
 context.scale(18, 18)
 
@@ -175,21 +175,19 @@ document.addEventListener('keydown', event => {
   }
 });
 
-document.addEventListener('touchstart', function (event) {
-  touchstartX = event.changedTouches[0].screenX;
-  touchstartY = event.changedTouches[0].screenY;
+canvas.addEventListener('touchstart', function (event) {
+  touchstart = event.changedTouches[0].screenX;
 }, false);
 
-document.addEventListener('touchend', function (event) {
-  touchendX = event.changedTouches[0].screenX;
-  touchendY = event.changedTouches[0].screenY;
+canvas.addEventListener('touchend', function (event) {
+  touchend = event.changedTouches[0].screenX;
   touchMoveTetromino();
 }, false);
 
 function touchMoveTetromino() {
-  if (touchendX < touchstartX) {
+  if (touchend < touchstart) {
     moveTetromino(-1);
-  } else if (touchendX > touchstartX) {
+  } else if (touchend > touchstart) {
     moveTetromino(1);
   } else {
     rotate(currentTetromino.tetromino);
@@ -258,7 +256,7 @@ function play(time = 0) {
   const deltaTime = time - lastTime;
   lastTime = time;
   dropCounter += deltaTime;
-  if (dropCounter > 500) {
+  if (dropCounter > 300) {
     dropTetromino();
   }
 
@@ -274,9 +272,8 @@ function play(time = 0) {
 
 function gameOver() {
   gameOverBool = true;
+  score = 0;
   playButton.style.color = 'white';
-  playButton.style.pointerEvents = 'all';
-  playButton.style.cursor = 'pointer';
   playButton.innerHTML = 'GAME<br>OVER';
   scoreLabel.innerHTML = 'HIGHSCORE';
   colorPicker.style.color = 'white';
@@ -286,6 +283,13 @@ function gameOver() {
   if (score > localStorage.getItem("highScore")) {
     localStorage.setItem("highScore", score);
   }
+  scoreCounter.innerHTML = localStorage.getItem("highScore");
+
+  setInterval(() => {
+    playButton.innerHTML = 'PLAY';
+    playButton.style.pointerEvents = 'all';
+    playButton.style.cursor = 'pointer';
+  }, 2000);
 }
 
 function pickColorScheme(colorScheme) {
