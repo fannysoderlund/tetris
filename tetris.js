@@ -5,8 +5,8 @@ const playButton = document.getElementById('gameStatus');
 const scoreLabel = document.getElementById('scoreLabel');
 const scoreCounter = document.getElementById('scoreCounter');
 const colorPicker = document.getElementById('colorPicker');
-const dropDownColor = document.getElementById('dropdown-content');
 const dropDownDiv = document.getElementById('dropdown');
+const highscoreList = document.getElementsByClassName('highscore');
 
 let touchstart = 0;
 let touchend = 0;
@@ -77,11 +77,26 @@ const colorsOldSchool = ['#1C1C1C', '#00E4FF', '#06FF30', '#9C1FFF', '#EBFF00', 
 
 let score = 0;
 
-if (localStorage.getItem("highScore") === null) {
-  localStorage.setItem("highScore", '0');
+let highscores;
+if (JSON.parse(localStorage.getItem("highScore")) !== null) {
+  highscores = JSON.parse(localStorage.getItem("highScore"));
+} else {
+  highscores = [
+    {
+      initials: 'TOY',
+      score: 12
+    },
+    {
+      initials: 'ASK',
+      score: 2
+    },
+    {
+      initials: 'BHG',
+      score: 1
+    },
+  ];
 }
-
-scoreCounter.innerHTML = localStorage.getItem("highScore").toString();
+fillHighscoreList();
 
 const gameBoard = generateGameboard(13, 22);
 
@@ -124,6 +139,29 @@ function generateGameboard(width, height) {
     matrix.push(new Array(width).fill(0));
   }
   return matrix;
+}
+
+function updateHighscores() {
+  let initials = '';
+
+  while (initials.length !== 3) {
+    initials = prompt("A highscore 🏆 Enter your initials", "XXX");
+  }
+
+  highscores.push({ initials: initials, score: score });
+  highscores.sort(function (a, b) {
+    return b.score - a.score;
+  });
+
+  highscores.pop();
+  localStorage.setItem("highScore", JSON.stringify(highscores));
+  fillHighscoreList();
+}
+
+function fillHighscoreList() {
+  for (let i = 0; i < highscoreList.length; i++) {
+    highscoreList[i].innerHTML = highscores[i].initials + ': ' + highscores[i].score;
+  }
 }
 
 function populateGameBoard(gameBoard, currentTetromino) {
@@ -272,18 +310,22 @@ function play(time = 0) {
 
 function gameOver() {
   gameOverBool = true;
-  score = 0;
   playButton.style.color = 'white';
   playButton.innerHTML = 'GAME<br>OVER';
-  scoreLabel.innerHTML = 'HIGHSCORE';
+  scoreLabel.innerHTML = 'HIGHSCORES';
+  fillHighscoreList();
+  for (let i = 0; i < highscoreList.length; i++) {
+    highscoreList[i].style.color = 'white';
+  }
   colorPicker.style.color = 'white';
   colorPicker.style.pointerEvents = 'all';
   dropDownDiv.style.pointerEvents = 'all';
 
-  if (score > localStorage.getItem("highScore")) {
-    localStorage.setItem("highScore", score);
+  if (score > highscores[2].score) {
+    updateHighscores();
   }
-  scoreCounter.innerHTML = localStorage.getItem("highScore");
+
+  score = 0;
 
   setInterval(() => {
     playButton.innerHTML = 'PLAY';
@@ -304,9 +346,12 @@ playButton.addEventListener('click', () => {
   playButton.style.cursor = 'none';
   scoreLabel.innerHTML = 'SCORE';
   scoreCounter.innerHTML = score.toString();
+  for (let i = 0; i < highscoreList.length; i++) {
+    highscoreList[i].style.color = '#1C1C1C';
+  }
+  scoreCounter.style.color = 'white';
   colorPicker.style.color = '#1C1C1C';
   colorPicker.style.pointerEvents = 'none';
   dropDownDiv.style.pointerEvents = 'none';
   play();
 });
-

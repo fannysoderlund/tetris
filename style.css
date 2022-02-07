@@ -44,8 +44,8 @@ body {
   line-height: 1.2;
 }
 
-.score h2 {
-  padding-top: 10%;
+.score h4 {
+  padding-top: 8%;
 }
 
 #colorPicker {
@@ -98,7 +98,7 @@ body {
   font-size: 24px;
   }
 
-  h3, h5 {
+  h3, h4, h5 {
   font-size: 9px;
   }
 
