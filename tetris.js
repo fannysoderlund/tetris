@@ -7,6 +7,8 @@ const scoreCounter = document.getElementById('scoreCounter');
 const colorPicker = document.getElementById('colorPicker');
 const dropDownDiv = document.getElementById('dropdown');
 const highscoreList = document.getElementsByClassName('highscore');
+const themeMusic = document.getElementById('theme-music');
+const gameOverMusic = document.getElementById('gameover-music');
 
 let touchstart = 0;
 let touchend = 0;
@@ -309,6 +311,8 @@ function play(time = 0) {
 }
 
 function gameOver() {
+  themeMusic.pause();
+  gameOverMusic.play();
   gameOverBool = true;
   playButton.style.color = 'white';
   playButton.innerHTML = 'GAME<br>OVER';
@@ -340,6 +344,7 @@ function pickColorScheme(colorScheme) {
 }
 
 playButton.addEventListener('click', () => {
+  themeMusic.play();
   gameOverBool = false;
   playButton.style.color = '#1C1C1C';
   playButton.style.pointerEvents = 'none';
