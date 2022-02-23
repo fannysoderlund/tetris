@@ -1,4 +1,3 @@
-
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const playButton = document.getElementById('gameStatus');
@@ -127,6 +126,7 @@ function clearRow() {
         continue outer;
       }
     }
+    //if no cell of current row has value 0 (is black/empty)
     const row = gameBoard.splice(y, 1)[0].fill(0);
     gameBoard.unshift(row);
     ++y;
@@ -164,43 +164,6 @@ function fillHighscoreList() {
   for (let i = 0; i < highscoreList.length; i++) {
     highscoreList[i].innerHTML = highscores[i].initials + ': ' + highscores[i].score;
   }
-}
-
-function populateGameBoard(gameBoard, currentTetromino) {
-  currentTetromino.tetromino.forEach((row, y) => {
-    row.forEach((value, x) => {
-      if (value !== 0) {
-        try {
-          gameBoard[y + currentTetromino.offset.y][x + currentTetromino.offset.x] = value;
-        } catch (TypeError) {
-          currentTetromino.offset.x = 5;
-        }
-      }
-    });
-  });
-}
-
-function drawTetromino(tetrominoNumber, offset) {
-  tetrominoNumber.forEach((row, y) => {
-    row.forEach((value, x) => {
-      if (value !== 0) {
-        switch (currentColorScheme) {
-          case 'forest':
-            context.fillStyle = colorsForest[value];
-            break;
-          case 'pastel':
-            context.fillStyle = colorsPastel[value];
-            break;
-          case 'oldSchool':
-            context.fillStyle = colorsOldSchool[value];
-            break;
-          default:
-            context.fillStyle = colorsStandard[value];
-        }
-        context.fillRect(x + offset.x, y + offset.y, 1, 1);
-      }
-    });
-  });
 }
 
 document.addEventListener('keydown', event => {
@@ -245,6 +208,7 @@ function dropTetromino() {
   currentTetromino.offset.y++;
   if (collide(gameBoard, currentTetromino)) {
     currentTetromino.offset.y--;
+    //save gameBoard status
     populateGameBoard(gameBoard, currentTetromino);
     currentTetromino.offset.y = 0;
     newTetromino();
@@ -253,17 +217,10 @@ function dropTetromino() {
   dropCounter = 0;
 }
 
-function newTetromino() {
-  currentTetromino.offset.x = 5;
-  currentTetromino.tetromino = tetrominos[Math.floor(Math.random() * 7)]
-  if (collide(gameBoard, currentTetromino)) {
-    gameOver();
-  }
-}
-
 function rotate(tetromino) {
   for (let y = 0; y < tetromino.length; ++y) {
     for (let x = 0; x < y; ++x) {
+      //transpose
       [
         tetromino[x][y],
         tetromino[y][x]
@@ -273,12 +230,65 @@ function rotate(tetromino) {
         ];
     }
   }
+  //reverse
   tetromino.reverse();
   let offset = 1;
+  //assure to not collide when rotating, test for all cubes of tetromino outside of the gameboard
   while (collide(gameBoard, currentTetromino)) {
     currentTetromino.offset.x += offset;
     offset = -(offset + (offset > 0 ? 1 : -1));
   }
+}
+
+function newTetromino() {
+  currentTetromino.offset.x = 5;
+  currentTetromino.tetromino = tetrominos[Math.floor(Math.random() * 7)]
+  //if collision occurs imediately after newly generated tetromino, then its game over
+  if (collide(gameBoard, currentTetromino)) {
+    gameOver();
+  }
+}
+
+function populateGameBoard(gameBoard, currentTetromino) {
+  currentTetromino.tetromino.forEach((row, y) => {
+    row.forEach((value, x) => {
+      if (value !== 0) {
+        try {
+          gameBoard[y + currentTetromino.offset.y][x + currentTetromino.offset.x] = value;
+        } catch (TypeError) {
+          currentTetromino.offset.x = 5;
+        }
+      }
+    });
+  });
+}
+
+function drawTetromino(tetrominoNumber, offset) {
+  tetrominoNumber.forEach((row, y) => {
+    row.forEach((value, x) => {
+      if (value !== 0) {
+        switch (currentColorScheme) {
+          case 'forest':
+            context.fillStyle = colorsForest[value];
+            break;
+          case 'pastel':
+            context.fillStyle = colorsPastel[value];
+            break;
+          case 'oldSchool':
+            context.fillStyle = colorsOldSchool[value];
+            break;
+          default:
+            context.fillStyle = colorsStandard[value];
+        }
+        context.fillRect(x + offset.x, y + offset.y, 1, 1);
+      }
+    });
+  });
+}
+
+function pickColorScheme(colorScheme) {
+  currentColorScheme = colorScheme;
+  localStorage.setItem("colorScheme", colorScheme);
 }
 
 let lastTime = 0;
@@ -296,8 +306,14 @@ function play(time = 0) {
   const deltaTime = time - lastTime;
   lastTime = time;
   dropCounter += deltaTime;
-  if (dropCounter > 300) {
-    dropTetromino();
+  if (score < 10) {
+    if (dropCounter > 300) {
+      dropTetromino();
+    }
+  } else {
+    if (dropCounter > 150) {
+      dropTetromino();
+    }
   }
 
   drawTetromino(currentTetromino.tetromino, currentTetromino.offset);
@@ -336,11 +352,6 @@ function gameOver() {
     playButton.style.pointerEvents = 'all';
     playButton.style.cursor = 'pointer';
   }, 2000);
-}
-
-function pickColorScheme(colorScheme) {
-  currentColorScheme = colorScheme;
-  localStorage.setItem("colorScheme", colorScheme);
 }
 
 playButton.addEventListener('click', () => {
