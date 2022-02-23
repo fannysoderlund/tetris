@@ -144,8 +144,11 @@ function generateGameboard(width, height) {
 }
 
 function updateHighscores() {
-  let initials = '';
 
+  let initials = null;
+  while (initials === null) {
+    initials = prompt("A highscore 🏆 Enter your initials", "XXX");
+  }
   while (initials.length !== 3) {
     initials = prompt("A highscore 🏆 Enter your initials", "XXX");
   }
@@ -310,8 +313,13 @@ function play(time = 0) {
     if (dropCounter > 300) {
       dropTetromino();
     }
-  } else {
+  } else if (score < 20) {
     if (dropCounter > 150) {
+      dropTetromino();
+    }
+  }
+  else if (score < 30) {
+    if (dropCounter > 75) {
       dropTetromino();
     }
   }
@@ -348,6 +356,7 @@ function gameOver() {
   score = 0;
 
   setInterval(() => {
+    //show game over screen for 2 seconds
     playButton.innerHTML = 'PLAY';
     playButton.style.pointerEvents = 'all';
     playButton.style.cursor = 'pointer';
